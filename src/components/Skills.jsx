@@ -1,23 +1,24 @@
 'use client';
 
 import { Code2, Layers, Globe, CheckCircle2 } from 'lucide-react';
-import { portfolioData } from '../data/portfolioData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Skills() {
-  const { skills } = portfolioData;
+  const { t } = useLanguage();
+  const { skills } = t;
 
   return (
     <section id="skills" className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-t border-white/[0.08]">
       {/* Header */}
       <div className="mb-10">
         <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#ff4d4d]">
-          Conhecimento Técnico
+          {skills.tag}
         </span>
         <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight mt-1">
-          Habilidades & Tecnologias
+          {skills.title}
         </h2>
         <p className="text-sm text-gray-400 mt-1 max-w-xl font-light">
-          Linguagens, frameworks e áreas práticas dominadas ao longo de cerca de 5 anos de desenvolvimento contínuo.
+          {skills.description}
         </p>
       </div>
 
@@ -28,11 +29,11 @@ export default function Skills() {
           <div className="flex items-center gap-2 mb-5 pb-3 border-b border-white/[0.06]">
             <Code2 className="w-4 h-4 text-[#ff0000]" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-200 font-mono">
-              Linguagens & Frameworks
+              {skills.languagesHeader}
             </h3>
           </div>
           <div className="flex flex-wrap gap-2">
-            {skills.languages.map((tech) => (
+            {skills.languagesList.map((tech) => (
               <span
                 key={tech}
                 className="px-3 py-1.5 rounded-lg bg-[#181818] text-xs font-medium text-gray-300 border border-white/[0.04] hover:bg-[#202020] transition-colors duration-150 font-mono"
@@ -49,11 +50,11 @@ export default function Skills() {
             <div className="flex items-center gap-2 mb-5 pb-3 border-b border-white/[0.06]">
               <Globe className="w-4 h-4 text-[#ff0000]" />
               <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-200 font-mono">
-                Idiomas
+                {skills.idiomasHeader}
               </h3>
             </div>
             <div className="space-y-3">
-              {skills.idiomas.map((item) => (
+              {skills.idiomasList.map((item) => (
                 <div key={item.language} className="flex items-center justify-between py-1.5 border-b border-white/[0.04]">
                   <span className="text-sm font-medium text-white">{item.language}</span>
                   <span className="text-xs text-[#ff4d4d] font-mono px-2 py-0.5 rounded-full bg-[#181818] border border-white/[0.06] font-medium">
@@ -64,7 +65,7 @@ export default function Skills() {
             </div>
           </div>
           <div className="mt-6 pt-3 text-[11px] text-gray-500 font-mono">
-            Documentação técnica em inglês fluente
+            {skills.idiomasFootnote}
           </div>
         </div>
 
@@ -73,11 +74,11 @@ export default function Skills() {
           <div className="flex items-center gap-2 mb-5 pb-3 border-b border-white/[0.06]">
             <Layers className="w-4 h-4 text-[#ff0000]" />
             <h3 className="text-xs font-semibold uppercase tracking-wider text-gray-200 font-mono">
-              Especialidades Práticas (FiveM, Discord & Web)
+              {skills.specialtiesHeader}
             </h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-            {skills.specialties.map((spec) => (
+            {skills.specialtiesList.map((spec) => (
               <div
                 key={spec}
                 className="p-3 rounded-xl bg-[#181818] border border-white/[0.04] text-xs font-medium text-gray-300 flex items-center gap-2.5"

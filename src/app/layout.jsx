@@ -1,4 +1,5 @@
 import './globals.css';
+import { LanguageProvider } from '../context/LanguageContext';
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
@@ -35,7 +36,9 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" href={`${basePath}/apple-touch-icon.png`} />
       </head>
       <body className="bg-[#0c0c0c] text-[#ededed] antialiased selection:bg-[#ff0000] selection:text-white min-h-screen">
-        {children}
+        <LanguageProvider>
+          {children}
+        </LanguageProvider>
       </body>
     </html>
   );

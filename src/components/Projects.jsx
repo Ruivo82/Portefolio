@@ -3,17 +3,28 @@
 import { useState } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import { GithubIcon } from './Icons';
-import { portfolioData } from '../data/portfolioData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Projects() {
-  const { projects } = portfolioData;
-  const [activeFilter, setActiveFilter] = useState('Todos');
+  const { t } = useLanguage();
+  const [activeFilter, setActiveFilter] = useState('all');
 
-  const filters = ['Todos', 'FiveM / Lua', 'FiveM / Node.js', 'Loja & FiveM'];
+  const filterButtons = [
+    { id: 'all', label: t.projects.filters.all },
+    { id: 'fivemLua', label: t.projects.filters.fivemLua },
+    { id: 'fivemNode', label: t.projects.filters.fivemNode },
+    { id: 'storeFivem', label: t.projects.filters.storeFivem },
+  ];
 
-  const filtered = activeFilter === 'Todos'
-    ? projects
-    : projects.filter((p) => p.category === activeFilter);
+  const projectCategoryMap = {
+    'ne-estomago': 'fivemLua',
+    'fivem-event-fix': 'fivemNode',
+    'rv-studios-tebex': 'storeFivem',
+  };
+
+  const filtered = activeFilter === 'all'
+    ? t.projects.items
+    : t.projects.items.filter((p) => projectCategoryMap[p.id] === activeFilter);
 
   return (
     <section id="projetos" className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-t border-white/[0.08]">
@@ -21,32 +32,32 @@ export default function Projects() {
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
         <div>
           <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#ff4d4d]">
-            Portfólio de Trabalho
+            {t.projects.tag}
           </span>
           <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight mt-1">
-            Projetos & Recursos
+            {t.projects.title}
           </h2>
         </div>
 
-        {/* Filter Pills — Solid, clean buttons */}
+        {/* Filter Pills */}
         <div className="flex flex-wrap gap-1.5">
-          {filters.map((item) => (
+          {filterButtons.map((item) => (
             <button
-              key={item}
-              onClick={() => setActiveFilter(item)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors duration-150 ${
-                activeFilter === item
+              key={item.id}
+              onClick={() => setActiveFilter(item.id)}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-medium transition-colors duration-150 cursor-pointer ${
+                activeFilter === item.id
                   ? 'bg-[#ff0000] text-white font-semibold shadow-sm'
                   : 'bg-[#181818] hover:bg-[#222222] text-gray-400 hover:text-white border border-white/[0.05]'
               }`}
             >
-              {item}
+              {item.label}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Projects Grid — Clean solid cards without excessive borders or glowing hairlines */}
+      {/* Projects Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {filtered.map((project) => (
           <article
@@ -76,7 +87,7 @@ export default function Projects() {
             </div>
 
             <div>
-              {/* Tech tags — Solid chips */}
+              {/* Tech tags */}
               <div className="flex flex-wrap gap-1.5 mb-5">
                 {project.tags.map((tag, idx) => (
                   <span
@@ -97,7 +108,7 @@ export default function Projects() {
                   className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white transition-colors"
                 >
                   <GithubIcon className="w-3.5 h-3.5" />
-                  <span>Código</span>
+                  <span>{t.projects.code}</span>
                 </a>
 
                 <a
@@ -106,7 +117,7 @@ export default function Projects() {
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-xs font-semibold text-white hover:text-[#ff4d4d] transition-colors group/link"
                 >
-                  <span>Aceder</span>
+                  <span>{t.projects.access}</span>
                   <ArrowUpRight className="w-3.5 h-3.5 text-gray-400 group-hover/link:text-[#ff4d4d] transition-colors" />
                 </a>
               </div>

@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { Briefcase, GraduationCap, ArrowUpRight, CheckCircle2, Calendar } from 'lucide-react';
-import { portfolioData } from '../data/portfolioData';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function Experience() {
-  const { personal, experience, education } = portfolioData;
+  const { t, shared } = useLanguage();
+  const { experience } = t;
   const [activeTab, setActiveTab] = useState('experiencia');
 
   return (
@@ -14,58 +15,58 @@ export default function Experience() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
         <div>
           <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-[#ff4d4d]">
-            Trajetória Oficial
+            {experience.tag}
           </span>
           <h2 className="text-2xl sm:text-4xl font-bold text-white tracking-tight mt-1">
-            Experiência & Educação
+            {experience.title}
           </h2>
           <p className="text-sm text-gray-400 mt-1 max-w-xl font-light">
-            Evolução prática constante desde os 14 anos aliada a formação técnica e superior em desenvolvimento de software.
+            {experience.description}
           </p>
         </div>
 
         <a
-          href={personal.cvLink}
+          href={shared.cvLink}
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#181818] hover:bg-[#222222] text-white text-xs font-medium border border-white/[0.06] transition-colors duration-150 shrink-0"
         >
-          <span>Ver CV Completo</span>
+          <span>{experience.viewFullCv}</span>
           <ArrowUpRight className="w-3.5 h-3.5 text-gray-400" />
         </a>
       </div>
 
-      {/* Segmented Switcher Tabs — Clean solid capsule pill switch */}
+      {/* Segmented Switcher Tabs */}
       <div className="flex gap-1.5 p-1 bg-[#141414] border border-white/[0.06] rounded-full mb-8 w-fit">
         <button
           onClick={() => setActiveTab('experiencia')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-colors duration-150 ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-colors duration-150 cursor-pointer ${
             activeTab === 'experiencia'
               ? 'bg-[#ff0000] text-white font-semibold shadow-sm'
               : 'text-gray-400 hover:text-white hover:bg-[#1e1e1e]'
           }`}
         >
           <Briefcase className="w-3.5 h-3.5" />
-          <span>Experiência Profissional (RV Studios)</span>
+          <span>{experience.tabExperience}</span>
         </button>
 
         <button
           onClick={() => setActiveTab('educacao')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-colors duration-150 ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-colors duration-150 cursor-pointer ${
             activeTab === 'educacao'
               ? 'bg-[#ff0000] text-white font-semibold shadow-sm'
               : 'text-gray-400 hover:text-white hover:bg-[#1e1e1e]'
           }`}
         >
           <GraduationCap className="w-3.5 h-3.5" />
-          <span>Formação Académica</span>
+          <span>{experience.tabEducation}</span>
         </button>
       </div>
 
       {/* Tab 1: Experiência Profissional RV Studios */}
       {activeTab === 'experiencia' && (
         <div className="space-y-6">
-          {experience.map((exp, idx) => (
+          {experience.experiences.map((exp, idx) => (
             <div
               key={idx}
               className="rounded-2xl bg-[#131313] border border-white/[0.06] p-6 sm:p-8"
@@ -101,7 +102,7 @@ export default function Experience() {
               <div className="mb-6">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-gray-300 font-mono mb-3 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#ff0000]" />
-                  Principais Realizações & Competências
+                  {experience.highlightsTitle}
                 </h4>
                 <div className="grid grid-cols-1 gap-2.5">
                   {exp.highlights.map((point, hIdx) => (
@@ -118,7 +119,7 @@ export default function Experience() {
 
               {/* Tech stack tags */}
               <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-white/[0.06]">
-                <span className="text-[11px] font-mono text-gray-500 mr-1">Stack:</span>
+                <span className="text-[11px] font-mono text-gray-500 mr-1">{experience.stackLabel}</span>
                 {exp.tags.map((tag) => (
                   <span
                     key={tag}
@@ -136,7 +137,7 @@ export default function Experience() {
       {/* Tab 2: Formação Académica */}
       {activeTab === 'educacao' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {education.map((edu, idx) => (
+          {experience.educations.map((edu, idx) => (
             <div
               key={idx}
               className="rounded-2xl bg-[#131313] border border-white/[0.06] p-6 sm:p-7 flex flex-col justify-between"
