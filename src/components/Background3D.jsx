@@ -38,7 +38,7 @@ export default function Background3D() {
     const planeGeo = new THREE.PlaneGeometry(600, 600, 1, 1);
     planeGeo.rotateX(-Math.PI / 2);
 
-    // 5. GPU Antialiased Grid Shader (Buttery smooth 60/144 FPS with zero borders or limits)
+    // 5. GPU Antialiased Grid Shader (Buttery smooth 60/144 FPS with zero borders, zero gray haze)
     const gridMaterial = new THREE.ShaderMaterial({
       extensions: {
         derivatives: true,
@@ -47,8 +47,8 @@ export default function Background3D() {
         uTime: { value: 0 },
         uSpeed: { value: 0.35 },
         uCellSize: { value: 5.0 },
-        uLineWidth: { value: 1.2 },
-        uColor: { value: new THREE.Color(0xb0b0b0) },
+        uLineWidth: { value: 0.9 },
+        uColor: { value: new THREE.Color(0xa0a0a0) },
         uBgColor: { value: new THREE.Color(0x0c0c0c) },
       },
       vertexShader: `
@@ -81,28 +81,32 @@ export default function Background3D() {
           vec2 coord = vWorldPosition.xz / uCellSize;
           coord.y -= uTime * uSpeed;
 
-          // GPU Subpixel Antialiased Grid Lines (never flickers, never drops frames)
+          // GPU Subpixel Antialiased Grid Lines
           vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
           float line = min(grid.x, grid.y);
           float lineAlpha = 1.0 - min(line / uLineWidth, 1.0);
 
-          // 1. Lateral smooth dissolve on sides (X axis) — zero visible side borders
-          float sideFade = fade(abs(vWorldPosition.x), 20.0, 60.0);
+          // Density suppression: prevents lines from clustering into a solid gray haze in distance
+          float lineDensity = max(fwidth(coord).x, fwidth(coord).y);
+          float densityFade = 1.0 - smoothstep(0.1, 0.45, lineDensity);
 
-          // 2. Far horizon dissolve (Far -Z) — fades into atmospheric infinity
-          float farFade = fade(-vWorldPosition.z, 20.0, 85.0);
+          // 1. Lateral smooth dissolve on sides (X axis) — zero visible side borders
+          float sideFade = fade(abs(vWorldPosition.x), 15.0, 50.0);
+
+          // 2. Far horizon dissolve (Far -Z) — fades completely to pure black before reaching upper screen
+          float farFade = fade(-vWorldPosition.z, 0.0, 40.0);
 
           // 3. Near camera dissolve (+Z) — fades out smoothly before reaching camera
-          float nearFade = fade(vWorldPosition.z, 0.0, 16.0);
+          float nearFade = fade(vWorldPosition.z, -5.0, 14.0);
 
-          // 4. Soft radial falloff for organic vignette
-          float dist = length(vWorldPosition.xz - vec2(0.0, 10.0));
-          float radialFade = fade(dist, 25.0, 95.0);
+          // 4. Soft radial falloff
+          float dist = length(vWorldPosition.xz - vec2(0.0, 8.0));
+          float radialFade = fade(dist, 15.0, 70.0);
 
-          float totalMask = lineAlpha * sideFade * farFade * nearFade * radialFade;
+          float totalMask = lineAlpha * densityFade * sideFade * farFade * nearFade * radialFade;
 
-          // Seamless blend into deep background #0c0c0c (zero limits/borders)
-          vec3 finalColor = mix(uBgColor, uColor, totalMask * 0.70);
+          // Seamless blend into deep pure black #0c0c0c (zero gray haze, zero cut)
+          vec3 finalColor = mix(uBgColor, uColor, totalMask * 0.60);
           gl_FragColor = vec4(finalColor, 1.0);
         }
       `,
