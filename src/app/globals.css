@@ -30,20 +30,14 @@ body {
   color: #ffffff;
 }
 
-/* Minimalist Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
+/* Hide scrollbar across all browsers while maintaining smooth scrolling */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-::-webkit-scrollbar-track {
-  background: #1e1e1e;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #333333;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #ff0000;
+*::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+  width: 0;
+  height: 0;
 }
