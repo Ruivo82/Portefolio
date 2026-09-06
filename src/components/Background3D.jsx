@@ -10,12 +10,11 @@ export default function Background3D() {
     const container = mountRef.current;
     if (!container) return;
 
-    // 1. Scene & Deep Dark Background with Seamless Atmospheric Horizon Fog
+    // 1. Scene & Deep Dark Background
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x0c0c0c);
-    scene.fog = new THREE.FogExp2(0x0c0c0c, 0.02);
 
-    // 2. Camera — Looking across the digital floor from a clean vantage point
+    // 2. Camera — High vantage point looking towards horizon
     const camera = new THREE.PerspectiveCamera(
       50,
       window.innerWidth / window.innerHeight,
@@ -25,120 +24,94 @@ export default function Background3D() {
     camera.position.set(0, 7.5, 22);
     camera.lookAt(0, -1.5, -20);
 
-    // 3. High-Quality WebGL Renderer (Sem flickering / anti-aliased)
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    // 3. Ultra High-Performance WebGL Renderer
+    const renderer = new THREE.WebGLRenderer({
+      antialias: false, // Antialiasing analytically computed in GLSL via fwidth
+      alpha: false,
+      powerPreference: 'high-performance',
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.2;
     container.appendChild(renderer.domElement);
 
-    // 4. Subtle Lighting
-    const ambientLight = new THREE.AmbientLight(0x333333, 2.5);
-    scene.add(ambientLight);
+    // 4. Large Ground Plane
+    const planeGeo = new THREE.PlaneGeometry(160, 220, 1, 1);
+    planeGeo.rotateX(-Math.PI / 2);
 
-    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight.position.set(0, 25, 20);
-    scene.add(dirLight);
+    // 5. GPU Antialiased Grid Shader (Buttery smooth 60/144 FPS with zero subpixel jitter)
+    const gridMaterial = new THREE.ShaderMaterial({
+      extensions: {
+        derivatives: true,
+      },
+      uniforms: {
+        uTime: { value: 0 },
+        uSpeed: { value: 0.35 },
+        uCellSize: { value: 5.0 },
+        uLineWidth: { value: 1.2 },
+        uColor: { value: new THREE.Color(0xb0b0b0) },
+        uBgColor: { value: new THREE.Color(0x0c0c0c) },
+      },
+      vertexShader: `
+        varying vec3 vWorldPosition;
 
-    // 5. True Architectural Floor Grid (Piso Reto e Nivelado no Chão)
-    const gridGroup = new THREE.Group();
-    // Piso horizontal nivelado, a começar a meio e a recuar para o horizonte
-    gridGroup.position.set(0, -4.8, -12);
-    gridGroup.rotation.set(0, 0, 0); // Perfeitamente nivelado como um piso real
-    scene.add(gridGroup);
+        void main() {
+          vec4 worldPos = modelMatrix * vec4(position, 1.0);
+          vWorldPosition = worldPos.xyz;
+          gl_Position = projectionMatrix * viewMatrix * worldPos;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vWorldPosition;
 
-    // Dimensões do piso — lajes amplas e espaçadas ("menos quadrados")
-    const floorWidth = 140;
-    const floorLength = 160;
-    const step = 5.0; // Tamanho ideal de lajes de piso espaçoso
-    const halfW = floorWidth / 2;
-    const halfL = floorLength / 2;
+        uniform float uTime;
+        uniform float uSpeed;
+        uniform float uCellSize;
+        uniform float uLineWidth;
+        uniform vec3 uColor;
+        uniform vec3 uBgColor;
 
-    // Função smoothstep matemática
-    const smoothstep = (min, max, value) => {
-      const x = Math.max(0, Math.min(1, (value - min) / (max - min)));
-      return x * x * (3 - 2 * x);
-    };
+        void main() {
+          // World coordinates
+          vec2 coord = vWorldPosition.xz / uCellSize;
+          coord.y -= uTime * uSpeed;
 
-    const vertices = [];
-    const colors = [];
-    const bgR = 12 / 255;  // #0c0c0c
-    const bgG = 12 / 255;
-    const bgB = 12 / 255;
-    const fgR = 0.70;      // Cinza claro elegante
-    const fgG = 0.70;
-    const fgB = 0.70;
+          // GPU Subpixel Antialiased Grid Lines (never flickers, never drops frames)
+          vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
+          float line = min(grid.x, grid.y);
+          float lineAlpha = 1.0 - min(line / uLineWidth, 1.0);
 
-    // Cálculo do desvanecimento suave nas 4 direções para NUNCA se ver nenhuma borda/limite
-    const calcFade = (x, z) => {
-      const fadeX = smoothstep(halfW, halfW - 25, Math.abs(x));
-      const fadeNear = smoothstep(halfL, halfL - 32, z);
-      const fadeFar = smoothstep(-halfL, -halfL + 35, z);
-      return fadeX * fadeNear * fadeFar;
-    };
+          // Atmospheric Dissolve into Horizon (#0c0c0c)
+          float farFade = smoothstep(-105.0, -15.0, vWorldPosition.z);
+          float nearFade = smoothstep(18.0, 6.0, vWorldPosition.z);
+          float sideFade = smoothstep(65.0, 20.0, abs(vWorldPosition.x));
 
-    const pushVertex = (x, y, z) => {
-      vertices.push(x, y, z);
-      const alpha = calcFade(x, z);
-      // O vértice funde-se perfeitamente com a cor de fundo (#0c0c0c) nas bordas
-      colors.push(
-        bgR + (fgR - bgR) * alpha,
-        bgG + (fgG - bgG) * alpha,
-        bgB + (fgB - bgB) * alpha
-      );
-    };
+          float mask = lineAlpha * farFade * nearFade * sideFade;
 
-    // Subdivisão dos segmentos de linha para que a transição de cor seja ultra-suave
-    const subStep = step;
-
-    // A. Linhas longitudinais (eixo Z - perspetiva)
-    for (let x = -halfW; x <= halfW + 0.001; x += step) {
-      for (let z = -halfL; z < halfL - 0.001; z += subStep) {
-        const nextZ = Math.min(halfL, z + subStep);
-        pushVertex(x, 0, z);
-        pushVertex(x, 0, nextZ);
-      }
-    }
-
-    // B. Linhas transversais (eixo X - lajes)
-    for (let z = -halfL; z <= halfL + 0.001; z += step) {
-      for (let x = -halfW; x < halfW - 0.001; x += subStep) {
-        const nextX = Math.min(halfW, x + subStep);
-        pushVertex(x, 0, z);
-        pushVertex(nextX, 0, z);
-      }
-    }
-
-    const gridGeo = new THREE.BufferGeometry();
-    gridGeo.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    gridGeo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-
-    // Material de linha nativo Three.js — 100% livre de flickering ("zero piscar")
-    const gridMat = new THREE.LineBasicMaterial({
-      vertexColors: true,
-      transparent: true,
-      opacity: 0.9,
+          vec3 finalColor = mix(uBgColor, uColor, mask * 0.75);
+          gl_FragColor = vec4(finalColor, 1.0);
+        }
+      `,
+      depthWrite: true,
+      depthTest: true,
     });
-    const gridMesh = new THREE.LineSegments(gridGeo, gridMat);
-    gridGroup.add(gridMesh);
 
-    // 6. Smooth Autonomous Forward Glide Animation Loop
+    const floorMesh = new THREE.Mesh(planeGeo, gridMaterial);
+    floorMesh.position.set(0, -4.8, -25);
+    scene.add(floorMesh);
+
+    // 6. Smooth Clock-based Animation Loop
+    const clock = new THREE.Clock();
     let animationFrameId;
-    const startTime = performance.now();
 
     const animate = () => {
-      const elapsedTime = (performance.now() - startTime) * 0.001;
-      const speed = 1.6;
-      // Deslize infinito impercetível dentro da zona invisível nas bordas
-      gridMesh.position.z = (elapsedTime * speed) % step;
-
-      renderer.render(scene, camera);
       animationFrameId = requestAnimationFrame(animate);
+      const delta = Math.min(clock.getDelta(), 0.1);
+      gridMaterial.uniforms.uTime.value += delta;
+      renderer.render(scene, camera);
     };
     animate();
 
-    // 7. Responsive Handling
+    // 7. Responsive Resize Handler
     const handleResize = () => {
       if (!container) return;
       const w = window.innerWidth;
@@ -147,21 +120,18 @@ export default function Background3D() {
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
-
-      gridGroup.position.set(0, -4.8, -12);
-      gridGroup.scale.setScalar(w < 768 ? 0.75 : 1);
     };
     window.addEventListener('resize', handleResize);
 
-    // 8. Proper Cleanup
+    // 8. Cleanup
     return () => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
       if (container && renderer.domElement) {
         container.removeChild(renderer.domElement);
       }
-      gridGeo.dispose();
-      gridMat.dispose();
+      planeGeo.dispose();
+      gridMaterial.dispose();
       renderer.dispose();
     };
   }, []);
