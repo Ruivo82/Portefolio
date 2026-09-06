@@ -82,8 +82,8 @@ export default function Hero() {
         </a>
       </div>
 
-      {/* Social Links Row — Solid, clean buttons without excessive borders or transparent ghost effects */}
-      <div className="flex flex-wrap items-center gap-2.5 pt-6 border-t border-white/[0.08] text-gray-400">
+      {/* Social Links Row — Solid, clean buttons without cutting border line */}
+      <div className="flex flex-wrap items-center gap-2.5 pt-4 text-gray-400">
         <span className="text-xs font-mono uppercase tracking-wider text-gray-500 mr-2">Canais:</span>
         <a
           href={personal.github}

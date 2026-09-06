@@ -10,11 +10,11 @@ export default function Background3D() {
     const container = mountRef.current;
     if (!container) return;
 
-    // 1. Scene & Deep Dark Background
+    // 1. Transparent Scene (Canvas 100% transparente para usar o fundo CSS nativo sem cortes)
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0c0c0c);
+    scene.background = null;
 
-    // 2. Camera — High vantage point looking towards horizon
+    // 2. Camera — Vista elevada para o horizonte
     const camera = new THREE.PerspectiveCamera(
       50,
       window.innerWidth / window.innerHeight,
@@ -24,22 +24,25 @@ export default function Background3D() {
     camera.position.set(0, 7.5, 22);
     camera.lookAt(0, -1.5, -20);
 
-    // 3. Ultra High-Performance WebGL Renderer
+    // 3. WebGL Renderer com Fundo 100% Transparente
     const renderer = new THREE.WebGLRenderer({
-      antialias: false, // Antialiasing analytically computed in GLSL via fwidth
-      alpha: false,
+      antialias: true,
+      alpha: true,
       powerPreference: 'high-performance',
     });
+    renderer.setClearColor(0x000000, 0);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     container.appendChild(renderer.domElement);
 
-    // 4. Massive Ground Plane (600x600 so geometry edges never exist within view)
+    // 4. Plano do Chão (Geometria 600x600)
     const planeGeo = new THREE.PlaneGeometry(600, 600, 1, 1);
     planeGeo.rotateX(-Math.PI / 2);
 
-    // 5. GPU Antialiased Grid Shader (Buttery smooth 60/144 FPS with zero borders, zero gray haze)
+    // 5. Shader GPU que desenha APENAS as linhas (o resto é 100% transparente)
     const gridMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
       extensions: {
         derivatives: true,
       },
@@ -47,9 +50,8 @@ export default function Background3D() {
         uTime: { value: 0 },
         uSpeed: { value: 0.35 },
         uCellSize: { value: 5.0 },
-        uLineWidth: { value: 0.9 },
-        uColor: { value: new THREE.Color(0xa0a0a0) },
-        uBgColor: { value: new THREE.Color(0x0c0c0c) },
+        uLineWidth: { value: 0.85 },
+        uColor: { value: new THREE.Color(0xb5b5b5) },
       },
       vertexShader: `
         varying vec3 vWorldPosition;
@@ -68,50 +70,49 @@ export default function Background3D() {
         uniform float uCellSize;
         uniform float uLineWidth;
         uniform vec3 uColor;
-        uniform vec3 uBgColor;
 
-        // Guaranteed smooth fade from 1.0 at startFade to 0.0 at endFade
         float fade(float val, float startFade, float endFade) {
           float t = clamp((endFade - val) / (endFade - startFade), 0.0, 1.0);
           return t * t * (3.0 - 2.0 * t);
         }
 
         void main() {
-          // World space grid coordinates
           vec2 coord = vWorldPosition.xz / uCellSize;
           coord.y -= uTime * uSpeed;
 
-          // GPU Subpixel Antialiased Grid Lines
+          // Cálculo das linhas do piso com anti-aliasing
           vec2 grid = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
           float line = min(grid.x, grid.y);
           float lineAlpha = 1.0 - min(line / uLineWidth, 1.0);
 
-          // Density suppression: prevents lines from clustering into a solid gray haze in distance
-          float lineDensity = max(fwidth(coord).x, fwidth(coord).y);
-          float densityFade = 1.0 - smoothstep(0.1, 0.45, lineDensity);
+          // Se não for uma linha, descarta imediatamente o pixel
+          if (lineAlpha <= 0.005) {
+            discard;
+          }
 
-          // 1. Lateral smooth dissolve on sides (X axis) — zero visible side borders
+          // Dissolução para evitar aglomeração de linhas no horizonte
+          float lineDensity = max(fwidth(coord).x, fwidth(coord).y);
+          float densityFade = 1.0 - smoothstep(0.12, 0.45, lineDensity);
+
+          // Dissolução suave lateral
           float sideFade = fade(abs(vWorldPosition.x), 15.0, 50.0);
 
-          // 2. Far horizon dissolve (Far -Z) — fades completely to pure black before reaching upper screen
-          float farFade = fade(-vWorldPosition.z, 0.0, 40.0);
+          // Dissolução suave no horizonte — desaparece antes do texto
+          float farFade = fade(-vWorldPosition.z, 0.0, 42.0);
 
-          // 3. Near camera dissolve (+Z) — fades out smoothly before reaching camera
+          // Dissolução suave perto da câmara
           float nearFade = fade(vWorldPosition.z, -5.0, 14.0);
 
-          // 4. Soft radial falloff
-          float dist = length(vWorldPosition.xz - vec2(0.0, 8.0));
-          float radialFade = fade(dist, 15.0, 70.0);
+          float alpha = lineAlpha * densityFade * sideFade * farFade * nearFade * 0.40;
 
-          float totalMask = lineAlpha * densityFade * sideFade * farFade * nearFade * radialFade;
+          if (alpha <= 0.005) {
+            discard;
+          }
 
-          // Seamless blend into deep pure black #0c0c0c (zero gray haze, zero cut)
-          vec3 finalColor = mix(uBgColor, uColor, totalMask * 0.60);
-          gl_FragColor = vec4(finalColor, 1.0);
+          // Desenha unicamente a linha com transparência suave sobre o fundo do site
+          gl_FragColor = vec4(uColor, alpha);
         }
       `,
-      depthWrite: true,
-      depthTest: true,
     });
 
     const floorMesh = new THREE.Mesh(planeGeo, gridMaterial);
