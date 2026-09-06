@@ -101,7 +101,7 @@ export default function Hero() {
           className="p-2.5 rounded-xl bg-[#181818] hover:bg-[#222222] text-gray-400 hover:text-white transition-colors duration-150 border border-white/[0.06]"
           title="Discord (discord.me/rvstudios)"
         >
-          <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
+          <DiscordIcon className="w-4 h-4" />
         </a>
         <a
           href={personal.youtube}

@@ -105,7 +105,7 @@ export default function Contact() {
                 rel="noopener noreferrer"
                 className="px-4 py-2 rounded-full bg-[#181818] hover:bg-[#222222] text-xs font-medium text-gray-300 hover:text-white border border-white/[0.06] transition-colors duration-150 flex items-center gap-2"
               >
-                <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
+                <DiscordIcon className="w-4 h-4" />
                 <span>Discord</span>
               </a>
               <a
