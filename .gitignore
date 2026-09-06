@@ -17,6 +17,8 @@
 .DS_Store
 *.pem
 *.bat
+AGENTS.md
+CLAUDE.md
 
 # debug
 npm-debug.log*
