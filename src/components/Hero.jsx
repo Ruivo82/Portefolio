@@ -1,7 +1,7 @@
 'use client';
 
 import { ArrowRight, ArrowUpRight, FileText, Mail, MapPin } from 'lucide-react';
-import { GithubIcon, TebexIcon, TikTokIcon, InstagramIcon, YoutubeIcon } from './Icons';
+import { GithubIcon, TebexIcon, TikTokIcon, InstagramIcon, YoutubeIcon, DiscordIcon } from './Icons';
 import { portfolioData } from '../data/portfolioData';
 
 export default function Hero() {
@@ -93,6 +93,15 @@ export default function Hero() {
           title="GitHub (Ruivo82)"
         >
           <GithubIcon className="w-4 h-4" />
+        </a>
+        <a
+          href={personal.discord}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="p-2.5 rounded-xl bg-[#181818] hover:bg-[#222222] text-gray-400 hover:text-white transition-colors duration-150 border border-white/[0.06]"
+          title="Discord (discord.me/rvstudios)"
+        >
+          <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
         </a>
         <a
           href={personal.youtube}

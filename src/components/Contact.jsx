@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Mail, Copy, Check, Send, MapPin } from 'lucide-react';
-import { GithubIcon, TebexIcon, TikTokIcon, InstagramIcon, YoutubeIcon } from './Icons';
+import { GithubIcon, TebexIcon, TikTokIcon, InstagramIcon, YoutubeIcon, DiscordIcon } from './Icons';
 import { portfolioData } from '../data/portfolioData';
 
 export default function Contact() {
@@ -98,6 +98,15 @@ export default function Contact() {
               >
                 <GithubIcon className="w-4 h-4" />
                 <span>GitHub</span>
+              </a>
+              <a
+                href={personal.discord}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 rounded-full bg-[#181818] hover:bg-[#222222] text-xs font-medium text-gray-300 hover:text-white border border-white/[0.06] transition-colors duration-150 flex items-center gap-2"
+              >
+                <DiscordIcon className="w-4 h-4 text-[#5865F2]" />
+                <span>Discord</span>
               </a>
               <a
                 href={personal.youtube}

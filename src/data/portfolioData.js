@@ -13,6 +13,7 @@ export const portfolioData = {
     avatar: `${basePath}/Foto.jpeg`,
     cvLink: `${basePath}/CV.pdf`,
     github: "https://github.com/Ruivo82",
+    discord: "https://discord.me/rvstudios",
     tebex: "https://rv-studios.tebex.io/",
     tiktok: "https://www.tiktok.com/@rv.studios82",
     instagram: "https://www.instagram.com/rvstudios.82/",
