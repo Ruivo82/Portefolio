@@ -41,6 +41,9 @@ export const translations = {
       tag: "Portfólio de Trabalho",
       title: "Projetos & Recursos",
       liveSync: "Sincronizado com o GitHub",
+      searchPlaceholder: "Pesquisar projeto ou tecnologia...",
+      noProjectsFound: "Nenhum projeto encontrado com os filtros atuais.",
+      clearSearch: "Limpar pesquisa",
       filters: {
         all: "Todos",
         fivemLua: "FiveM / Lua",
@@ -267,6 +270,9 @@ export const translations = {
       tag: "Work Portfolio",
       title: "Projects & Resources",
       liveSync: "Live GitHub Sync",
+      searchPlaceholder: "Search project or tech stack...",
+      noProjectsFound: "No projects found matching current filters.",
+      clearSearch: "Clear search",
       filters: {
         all: "All",
         fivemLua: "FiveM / Lua",
