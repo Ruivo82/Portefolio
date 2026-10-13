@@ -118,7 +118,7 @@ export const translations = {
       cardDesc: "Na loja oficial da RV Studios encontras todos os scripts e recursos desenvolvidos sob a nossa marca para servidores FiveM. O catálogo inclui interfaces NUI, sistemas interativos e utilitários de servidor com entrega automática e suporte direto.",
       specs: [
         { label: "Plataforma", val: "FiveM / FXServer" },
-        { label: "Entrega", val: "Automática via Keymaster" },
+        { label: "Entrega", val: "Automática via Tebex" },
         { label: "Endereço", val: "rv-studios.tebex.io" },
         { label: "Suporte", val: "Comunidade no Discord" },
       ],
@@ -349,7 +349,7 @@ export const translations = {
       cardDesc: "On the official RV Studios storefront, you will find all scripts and game resources developed under our brand for FiveM servers. The catalog includes NUI interfaces, interactive game systems, and server utilities with instant delivery and direct support.",
       specs: [
         { label: "Platform", val: "FiveM / FXServer" },
-        { label: "Delivery", val: "Instant via Keymaster" },
+        { label: "Delivery", val: "Instant via Tebex" },
         { label: "Storefront", val: "rv-studios.tebex.io" },
         { label: "Support", val: "Discord Community" },
       ],

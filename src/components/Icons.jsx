@@ -91,3 +91,38 @@ export function DiscordIcon({ className = "w-4 h-4" }) {
     </svg>
   );
 }
+
+export function PortugalFlag({ className = "w-4 h-3" }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="24" height="16" rx="2" fill="#DA291C" />
+      <path d="M0 0H9.6V16H0V0Z" fill="#046A38" />
+      <circle cx="9.6" cy="8" r="3.2" fill="#FFCC00" />
+      <circle cx="9.6" cy="8" r="2.4" fill="#DA291C" />
+      <path d="M8.5 6.4H10.7V8.1C10.7 8.9 10.1 9.5 9.6 9.8C9.1 9.5 8.5 8.9 8.5 8.1V6.4Z" fill="#FFFFFF" />
+      <path d="M8.8 6.7H10.4V7.9C10.4 8.5 10 8.9 9.6 9.2C9.2 8.9 8.8 8.5 8.8 7.9V6.7Z" fill="#002B7F" />
+    </svg>
+  );
+}
+
+export function UkFlag({ className = "w-4 h-3" }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 16"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <rect width="24" height="16" rx="2" fill="#012169" />
+      <path d="M0 0L24 16M24 0L0 16" stroke="#FFFFFF" strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" strokeWidth="1.3" strokeLinecap="round" />
+      <path d="M12 0V16M0 8H24" stroke="#FFFFFF" strokeWidth="4.2" />
+      <path d="M12 0V16M0 8H24" stroke="#C8102E" strokeWidth="2.4" />
+    </svg>
+  );
+}
