@@ -34,6 +34,7 @@ export default function Navbar() {
   const navLinks = [
     { name: t.nav.about, href: '#sobre' },
     { name: t.nav.projects, href: '#projetos' },
+    { name: t.nav.store || t.nav.tebex, href: '#loja' },
     { name: t.nav.skills, href: '#skills' },
     { name: t.nav.journey, href: '#trajetoria' },
     { name: t.nav.contact, href: '#contacto' },

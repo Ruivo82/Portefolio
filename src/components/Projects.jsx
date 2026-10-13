@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { ArrowUpRight, Search, X, Sparkles, Terminal, ShoppingBag, Layers, Code2 } from 'lucide-react';
+import { ArrowUpRight, Search, X } from 'lucide-react';
 import { GithubIcon } from './Icons';
 import { useLanguage } from '../context/LanguageContext';
 import { fetchGitHubRepos, mergeProjectsWithGitHub } from '../utils/github';
@@ -47,14 +47,13 @@ export default function Projects() {
     return mergeProjectsWithGitHub(t.projects.items || [], gitHubRepos, lang);
   }, [t.projects.items, gitHubRepos, lang]);
 
-  // Definição dos filtros padrão
+  // Definição dos filtros padrão para projetos de código
   const standardFilters = [
     { id: 'all', label: t.projects.filters.all },
     { id: 'fivemLua', label: t.projects.filters.fivemLua },
     { id: 'fivemNode', label: t.projects.filters.fivemNode },
     { id: 'web', label: t.projects.filters.web || (lang === 'pt' ? 'Web & Aplicações' : 'Web & Apps') },
     { id: 'discord', label: lang === 'pt' ? 'Discord / Bots' : 'Discord & Bots' },
-    { id: 'storeFivem', label: t.projects.filters.storeFivem },
   ];
 
   // Identificar categorias adicionais dinâmicas presentes nos projetos
@@ -111,69 +110,9 @@ export default function Projects() {
     });
   }, [allProjects, activeFilter, searchQuery]);
 
-  // Gerador de identidade visual de montra para cada projeto
-  const getShowcaseVisual = (project) => {
-    const id = (project.id || '').toLowerCase();
-    const cat = project.categoryId || '';
-    const tags = (project.tags || []).map((t) => t.toLowerCase());
-
-    if (cat === 'storeFivem' || id.includes('tebex')) {
-      return {
-        badge: lang === 'pt' ? 'LOJA OFICIAL' : 'OFFICIAL STORE',
-        subType: 'TEBEX STORE',
-        watermark: 'STORE',
-        accentBadge: 'border-amber-500/30 text-amber-400 bg-amber-500/10',
-        glowGradient: 'from-amber-500/10 via-transparent to-transparent',
-        Icon: ShoppingBag,
-      };
-    }
-
-    if (cat === 'fivemLua' || tags.includes('lua')) {
-      return {
-        badge: 'FIVEM / LUA',
-        subType: 'LUA RESOURCE',
-        watermark: 'LUA',
-        accentBadge: 'border-[#ff0000]/30 text-[#ff4d4d] bg-[#ff0000]/10',
-        glowGradient: 'from-[#ff0000]/10 via-transparent to-transparent',
-        Icon: Layers,
-      };
-    }
-
-    if (cat === 'fivemNode' || tags.includes('node.js')) {
-      return {
-        badge: 'FIVEM / NODE',
-        subType: 'SERVER TOOL',
-        watermark: 'NODE',
-        accentBadge: 'border-emerald-500/30 text-emerald-400 bg-emerald-500/10',
-        glowGradient: 'from-emerald-500/10 via-transparent to-transparent',
-        Icon: Terminal,
-      };
-    }
-
-    if (cat === 'web' || tags.includes('javascript') || tags.includes('react')) {
-      return {
-        badge: lang === 'pt' ? 'WEB & APP' : 'WEB & APPS',
-        subType: 'WEB APPLICATION',
-        watermark: 'WEB',
-        accentBadge: 'border-cyan-500/30 text-cyan-400 bg-cyan-500/10',
-        glowGradient: 'from-cyan-500/10 via-transparent to-transparent',
-        Icon: Code2,
-      };
-    }
-
-    return {
-      badge: (project.category || 'PROJETO').toUpperCase(),
-      subType: 'OPEN REPO',
-      watermark: 'GIT',
-      accentBadge: 'border-purple-500/30 text-purple-400 bg-purple-500/10',
-      glowGradient: 'from-purple-500/10 via-transparent to-transparent',
-      Icon: Sparkles,
-    };
-  };
-
   return (
     <section id="projetos" className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto border-t border-white/[0.08]">
-      {/* Cabeçalho da Montra */}
+      {/* Header Compacto & Limpo */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
@@ -181,11 +120,11 @@ export default function Projects() {
               {t.projects.tag}
             </span>
             <span
-              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.04] border border-white/[0.08] text-gray-300"
+              className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-mono bg-white/[0.04] border border-white/[0.08] text-gray-400"
               title={
                 lang === 'pt'
-                  ? 'Montra sincronizada em tempo real com o GitHub'
-                  : 'Showcase synced in real time with GitHub'
+                  ? 'Repositórios sincronizados automaticamente com o GitHub'
+                  : 'Repositories automatically synced with GitHub'
               }
             >
               <span
@@ -193,7 +132,7 @@ export default function Projects() {
                   syncStatus === 'synced' ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400'
                 }`}
               />
-              {t.projects.liveSync} • {allProjects.length} {lang === 'pt' ? 'itens em exibição' : 'items on display'}
+              {t.projects.liveSync} • {allProjects.length}
             </span>
           </div>
 
@@ -202,14 +141,14 @@ export default function Projects() {
           </h2>
         </div>
 
-        {/* Barra de Pesquisa de Catálogo */}
+        {/* Barra de Pesquisa Rápida */}
         <div className="relative w-full md:w-64">
           <Search className="w-3.5 h-3.5 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={t.projects.searchPlaceholder || 'Filtrar montra...'}
+            placeholder={t.projects.searchPlaceholder || 'Pesquisar projetos...'}
             className="w-full pl-8 pr-7 py-2 text-xs bg-[#131313] hover:bg-[#161616] focus:bg-[#161616] border border-white/[0.08] focus:border-[#ff0000]/60 rounded-full text-white placeholder-gray-500 transition-colors focus:outline-none font-mono"
           />
           {searchQuery && (
@@ -223,7 +162,7 @@ export default function Projects() {
         </div>
       </div>
 
-      {/* Filtros em Estilo Expositor com Contadores */}
+      {/* Barra de Filtros com Contadores */}
       <div className="flex flex-wrap gap-1.5 mb-8 pb-3 border-b border-white/[0.05]">
         {filterButtons.map((item) => {
           const count = filterCounts[item.id] || 0;
@@ -252,127 +191,90 @@ export default function Projects() {
         })}
       </div>
 
-      {/* Montra em Grelha (3 Colunas em Desktop / Vitrine Visual) */}
+      {/* Grid de Projetos Limpo & Compacto (3 colunas em desktop) */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((project) => {
-            const visual = getShowcaseVisual(project);
-            const VisualIcon = visual.Icon;
-
-            return (
-              <article
-                key={project.id}
-                className="group relative rounded-2xl bg-[#111111] hover:bg-[#151515] border border-white/[0.07] hover:border-[#ff4d4d]/40 flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-black/70 overflow-hidden"
-              >
-                {/* Linha de Neon Superior no Hover */}
-                <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#ff0000] to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-20" />
-
-                <div>
-                  {/* Moldura Visual de Vitrine (Mini-Expositor) */}
-                  <div className="relative h-24 bg-[#0a0a0a] border-b border-white/[0.06] p-3 flex flex-col justify-between overflow-hidden">
-                    {/* Marca d'água técnica estilizada no fundo */}
-                    <div className="absolute right-2 -bottom-2 text-4xl font-black font-mono tracking-tighter text-white/[0.03] select-none group-hover:text-white/[0.07] transition-colors">
-                      {visual.watermark}
-                    </div>
-
-                    {/* Brilho suave temático */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${visual.glowGradient} opacity-60 group-hover:opacity-100 transition-opacity pointer-events-none`} />
-
-                    {/* Barra de Janela / Controlos de Montra */}
-                    <div className="relative z-10 flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2 h-2 rounded-full bg-[#ff5f56]/80 inline-block" />
-                        <span className="w-2 h-2 rounded-full bg-[#ffbd2e]/80 inline-block" />
-                        <span className="w-2 h-2 rounded-full bg-[#27c93f]/80 inline-block" />
-                      </div>
-
-                      <span className={`text-[9px] font-mono font-semibold tracking-wider px-2 py-0.5 rounded-full border ${visual.accentBadge}`}>
-                        {visual.badge}
-                      </span>
-                    </div>
-
-                    {/* Rodapé da Moldura: Tipo de Recurso & Estado */}
-                    <div className="relative z-10 flex items-center justify-between">
-                      <div className="flex items-center gap-1.5 text-[10px] font-mono text-gray-400 uppercase tracking-wider">
-                        <VisualIcon className="w-3 h-3 text-gray-500" />
-                        <span>{visual.subType}</span>
-                      </div>
-
-                      {project.stats && (
-                        <span className="text-[10px] font-mono font-medium text-gray-300 px-2 py-0.5 rounded bg-black/50 border border-white/[0.08] backdrop-blur-sm">
-                          {project.stats}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Informação do Recurso */}
-                  <div className="p-5 pb-3">
-                    <h3 className="text-base font-bold text-white group-hover:text-[#ff4d4d] transition-colors leading-snug line-clamp-1 mb-2">
-                      <a
-                        href={project.demo || project.github || `https://github.com/${githubUsername}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="focus:outline-none"
-                      >
-                        {project.title}
-                      </a>
-                    </h3>
-
-                    <p className="text-xs text-gray-400 leading-relaxed font-normal line-clamp-2 min-h-[2rem]">
-                      {project.description}
-                    </p>
-
-                    {/* Tags Técnicas Estilo Ficha de Produto */}
-                    <div className="flex flex-wrap gap-1 mt-4">
-                      {(project.tags || []).slice(0, 3).map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="text-[10px] px-2 py-0.5 rounded bg-[#181818] text-gray-300 font-mono border border-white/[0.04]"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {(project.tags || []).length > 3 && (
-                        <span className="text-[9px] font-mono text-gray-500 px-1.5 py-0.5">
-                          +{(project.tags || []).length - 3}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filtered.map((project) => (
+            <article
+              key={project.id}
+              className="group rounded-xl bg-[#121212] hover:bg-[#161616] border border-white/[0.06] hover:border-white/[0.15] p-5 flex flex-col justify-between transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/50"
+            >
+              <div>
+                {/* Metadados Superiores */}
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-gray-400 px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">
+                    {project.category}
+                  </span>
+                  {project.stats && (
+                    <span className="text-[10px] font-mono font-medium text-[#ff4d4d] px-2 py-0.5 rounded bg-[#181818] border border-[#ff0000]/20">
+                      {project.stats}
+                    </span>
+                  )}
                 </div>
 
-                {/* Botões de Ação da Montra */}
-                <div className="px-5 pb-5 pt-3 border-t border-white/[0.05] flex items-center gap-2">
-                  {project.github && (
-                    <a
-                      href={project.github}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 py-1.5 rounded-lg bg-[#181818] hover:bg-[#222222] border border-white/[0.06] text-xs font-mono text-gray-300 hover:text-white inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <GithubIcon className="w-3.5 h-3.5" />
-                      <span>{t.projects.code}</span>
-                    </a>
-                  )}
-
+                {/* Título */}
+                <h3 className="text-base font-bold text-white group-hover:text-[#ff4d4d] transition-colors leading-snug line-clamp-1 mb-2">
                   <a
                     href={project.demo || project.github || `https://github.com/${githubUsername}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-1.5 rounded-lg bg-[#ff0000]/15 hover:bg-[#ff0000] border border-[#ff0000]/30 hover:border-[#ff0000] text-xs font-semibold text-white inline-flex items-center justify-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                    className="focus:outline-none"
                   >
-                    <span>{t.projects.access}</span>
-                    <ArrowUpRight className="w-3.5 h-3.5" />
+                    {project.title}
                   </a>
+                </h3>
+
+                {/* Descrição Compacta Padronizada */}
+                <p className="text-xs text-gray-400 leading-relaxed font-normal line-clamp-2 min-h-[2rem]">
+                  {project.description}
+                </p>
+
+                {/* Tags Técnicas */}
+                <div className="flex flex-wrap gap-1 mt-4">
+                  {(project.tags || []).slice(0, 3).map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[10px] px-2 py-0.5 rounded bg-[#181818] text-gray-300 font-mono border border-white/[0.04]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                  {(project.tags || []).length > 3 && (
+                    <span className="text-[9px] font-mono text-gray-500 px-1 py-0.5">
+                      +{(project.tags || []).length - 3}
+                    </span>
+                  )}
                 </div>
-              </article>
-            );
-          })}
+              </div>
+
+              {/* Links de Ação no Rodapé */}
+              <div className="pt-3 mt-4 border-t border-white/[0.05] flex items-center justify-between gap-2">
+                <a
+                  href={project.github || `https://github.com/${githubUsername}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-xs font-mono text-gray-400 hover:text-white transition-colors"
+                >
+                  <GithubIcon className="w-3.5 h-3.5" />
+                  <span>{t.projects.code}</span>
+                </a>
+
+                <a
+                  href={project.demo || project.github || `https://github.com/${githubUsername}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-semibold text-white hover:text-[#ff4d4d] transition-colors group/link"
+                >
+                  <span>{t.projects.access}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 text-gray-400 group-hover/link:text-[#ff4d4d] transition-colors" />
+                </a>
+              </div>
+            </article>
+          ))}
         </div>
       ) : (
-        /* Estado Vazio de Catálogo */
-        <div className="py-12 text-center rounded-2xl bg-[#121212] border border-white/[0.06] p-8">
+        /* Estado Vazio */
+        <div className="py-12 text-center rounded-xl bg-[#121212] border border-white/[0.06] p-8">
           <p className="text-sm text-gray-400 mb-3">
             {t.projects.noProjectsFound || 'Nenhum projeto encontrado.'}
           </p>
