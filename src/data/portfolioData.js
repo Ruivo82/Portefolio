@@ -104,44 +104,12 @@ export const portfolioData = {
     },
   ],
 
-  store: [
-    {
-      id: "rv-garage",
-      title: "RV Garage System",
-      category: "Sistema de Garagens",
-      description: "Sistema avançado de garagens para FiveM com partilha de chaves, apreendidos, bloqueios de seguro, compatível com ox_lib, ESX e QBCore.",
-      badge: "Mais Popular",
-      tags: ["FiveM", "Lua", "ox_lib", "ESX", "QBCore", "NUI"],
-      link: "https://rv-studios.tebex.io/",
-    },
-    {
-      id: "rv-housing",
-      title: "RV Housing & Imobiliária",
-      category: "Habitação & Propriedades",
-      description: "Sistema imobiliário com compra e aluguer de casas, chaves partilhadas, mobília interativa, cofres de armazenamento e integração avançada.",
-      badge: "Destaque",
-      tags: ["FiveM", "Lua", "NUI React", "Armazenamento", "ESX / QBox"],
-      link: "https://rv-studios.tebex.io/",
-    },
-    {
-      id: "ox-inventory-theme",
-      title: "OX Inventory — Redesign NUI",
-      category: "Interface / NUI",
-      description: "Redesign moderno e responsivo do ox_inventory com animações fluidas, efeitos sonoros imersivos e máxima fidelidade visual.",
-      badge: "Interface NUI",
-      tags: ["React", "Tailwind CSS", "ox_inventory", "NUI", "FiveM"],
-      link: "https://rv-studios.tebex.io/",
-    },
-    {
-      id: "custom-scripts",
-      title: "Desenvolvimento Sob Medida",
-      category: "Serviço Personalizado",
-      description: "Desenvolvimento de scripts exclusivos, HUDs à medida, bots de Discord integrados e otimização de servidor para a tua comunidade.",
-      badge: "Sob Encomenda",
-      tags: ["Personalizado", "Full Stack", "FiveM", "Discord.js"],
-      link: "https://discord.me/rvstudios",
-    },
-  ],
+  store: {
+    title: "Loja Oficial RV Studios",
+    description: "Distribuição oficial de scripts personalizados, interfaces NUI e recursos desenvolvidos para comunidades de FiveM.",
+    tebexUrl: "https://rv-studios.tebex.io/",
+    discordUrl: "https://discord.me/rvstudios",
+  },
 
   experience: [
     {
